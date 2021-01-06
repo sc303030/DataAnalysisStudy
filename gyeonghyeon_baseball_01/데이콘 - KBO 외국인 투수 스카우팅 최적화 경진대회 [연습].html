@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>데이콘 - KBO 외국인 투수 스카우팅 최적화 경진대회 [연습]</title></head>
+<body><h1>데이콘 - KBO 외국인 투수 스카우팅 최적화 경진대회 [연습]</h1>
+<h3>데이터 불러오기</h3>
+<pre><code class='language-python' lang='python'>import pandas as pd
+</code></pre>
+<pre><code class='language-python' lang='python'>외국인역대성적 = pd.read_csv(&#39;kbo_yearly_foreigners_2011_2018.csv&#39;)
+외국인메이저성적 = pd.read_csv(&#39;fangraphs_foreigners_2011_2018.csv&#39;)
+외국인스탯캐스터 = pd.read_csv(&#39;baseball_savant_foreigners_2011_2018.csv&#39;)
+신규외국인성적 = pd.read_csv(&#39;fangraphs_foreigners_2019.csv&#39;)
+신규외국인스텟캐스터 = pd.read_csv(&#39;baseball_savant_foreigners_2019.csv&#39;)
+</code></pre>
+<h3>파일 확인</h3>
+<pre><code class='language-python' lang='python'>display(외국인역대성적.head())
+print(&#39;*&#39;*50)
+display(외국인메이저성적.head())
+print(&#39;*&#39;*50)
+display(외국인스탯캐스터.head())
+print(&#39;*&#39;*50)
+display(신규외국인성적.head())
+print(&#39;*&#39;*50)
+display(신규외국인스텟캐스터.head())
+print(&#39;*&#39;*50)
+</code></pre>
+<p><img src="./img/01.jpg" referrerpolicy="no-referrer" alt="01"></p>
+<ul>
+<li>다음과 같이 파일이 어떤 구성으로 되어있는지 확인하였다.</li>
+
+</ul>
+<h3>승리와 패배 크롤링 하기</h3>
+<ul>
+<li>승리와 패배가 없어서 <a href='https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx'>기록실</a>에서 크롤링하기로 하였다.</li>
+
+</ul>
+<pre><code class='language-python' lang='python'>name = list(set(외국인역대성적[&#39;pitcher_name&#39;]))
+
+name_dict = {}
+for data in name:
+    name_dict[data] = 0
+</code></pre>
+<ul>
+<li>우선 외국인 선수의 이름을 담은 리스트를 만들어서 각자 값을 담을 딕셔너리를 만든다.</li>
+
+</ul>
+<h4>패키지 import</h4>
+<pre><code class='language-python' lang='python'>from urllib.request import urlopen
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
+from urllib.error   import HTTPError
+from urllib.error   import URLError
+
+from selenium import webdriver
+import time
+path = &#39;../driver/chromedriver.exe&#39;
+driver = webdriver.Chrome(path)
+</code></pre>
+<h4>크롤링 함수 </h4>
+<pre><code class='language-python' lang='python'>driver.get(&#39;https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx&#39;)
+page1 = driver.find_elements_by_tag_name(&#39;option&#39;)
+for year in [ i for i in range(2011,2019)]:
+    page1 = driver.find_elements_by_tag_name(&#39;option&#39;)
+    for i in page1:
+        if i.text == str(year):
+            print(year)
+            i.click()
+            time.sleep(1.5)
+            page = driver.find_elements_by_css_selector(&#39;.tData01&#39;)
+            k = page[0].find_element_by_tag_name(&#39;thead&#39;).find_element_by_tag_name(&#39;tr&#39;).find_elements_by_tag_name(&#39;th&#39;)
+            k[5].click()
+            time.sleep(1.5)
+            page3 = driver.find_elements_by_css_selector(&#39;.paging&#39;)
+            for page_num in range(1,6):
+                page3 = driver.find_elements_by_css_selector(&#39;.paging&#39;)
+                page3[0].find_elements_by_tag_name(&#39;a&#39;)[page_num].click()
+                time.sleep(1.5)
+                page2 = driver.find_elements_by_css_selector(&#39;.tData01&#39;)
+                a = page2[0].find_element_by_tag_name(&#39;tbody&#39;).find_elements_by_tag_name(&#39;tr&#39;)
+                for idx,value in enumerate(a):
+                    print(value.find_elements_by_tag_name(&#39;td&#39;)[1].text)
+</code></pre>
+<p><img src="./img/02.png" referrerpolicy="no-referrer" alt="02"></p>
+<ul>
+<li>우선 연도를 클릭해야 해서 해당 태그를 찾아 option이랑 루프 구문이 같으면 클릭<code>i.click()</code>해서 해당 연도로 넘어가도록 하였다.</li>
+
+</ul>
+<p><img src="./img/03.png" referrerpolicy="no-referrer" alt="03"></p>
+<ul>
+<li>그 다음에 처음 화면은 제한된 선수만 보여줘서 W<code>k[5].click()</code>를 클릭하여 모든 선수를 볼 수 있도록 한다.</li>
+
+</ul>
+<p><img src="./img/04.png" referrerpolicy="no-referrer" alt="04"></p>
+<ul>
+<li>다음과 같이 정렬하도록 click()속성을 준다.</li>
+
+</ul>
+<p><img src="./img/05.png" referrerpolicy="no-referrer" alt="05"></p>
+<ul>
+<li>총 5페이지여서 <code>page3[0].find_elements_by_tag_name(&#39;a&#39;)[page_num].click()</code> 하여 페이지를 넘긴다.</li>
+<li>다시 2012년도로 돌아갈 때 다음과 에러가 발생하였다.</li>
+
+</ul>
+<p><img src="./img/06.jpg" referrerpolicy="no-referrer" alt="06"></p>
+<ul>
+<li>그래서 함수로 만들어서 년도별로 저장하려고 한다.</li>
+
+</ul>
+<h3>에러 해결 후 다시 크롤링</h3>
+<pre><code class='language-python' lang='python'>def player_win(year,dic):
+    driver.get(&#39;https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx&#39;)
+    page1 = driver.find_elements_by_tag_name(&#39;option&#39;)
+    for i in page1:
+            if i.text == str(year):
+                print(year)
+                i.click()
+                time.sleep(1.5)
+                page = driver.find_elements_by_css_selector(&#39;.tData01&#39;)
+                k = page[0].find_element_by_tag_name(&#39;thead&#39;).find_element_by_tag_name(&#39;tr&#39;).find_elements_by_tag_name(&#39;th&#39;)
+                k[5].click()
+                time.sleep(1.5)
+                page3 = driver.find_elements_by_css_selector(&#39;.paging&#39;)
+                for page_num in range(1,6):
+                    page3 = driver.find_elements_by_css_selector(&#39;.paging&#39;)
+                    page3[0].find_elements_by_tag_name(&#39;a&#39;)[page_num].click()
+                    time.sleep(1.5)
+                    page2 = driver.find_elements_by_css_selector(&#39;.tData01&#39;)
+                    a = page2[0].find_element_by_tag_name(&#39;tbody&#39;).find_elements_by_tag_name(&#39;tr&#39;)
+                    for idx,value in enumerate(a):
+                        name = value.find_elements_by_tag_name(&#39;td&#39;)[1].text
+                        for key in list(dic.keys()):
+                            if key == name:
+                                print(name)
+                                dic[key] = [value.find_elements_by_tag_name(&#39;td&#39;)[5].text, value.find_elements_by_tag_name(&#39;td&#39;)[6].text]
+                break 
+    return    dic   
+</code></pre>
+<ul>
+<li>크롤링 함수안에서 날짜를 잡으려고 하니 에러가 나서 우선 함수를 만들고 함수 바깥에서 for문을 돌려서 연도를 넘겨주기로 하였다. 그리고 break를 써서 에러나기전에 빠져나왔다.</li>
+
+</ul>
+<h3>연도별 dict 만들기</h3>
+<pre><code class='language-python' lang='python'>name_dict_11 = {}
+for data in name:
+    name_dict_11[data] = 0
+
+name_dict_12 = {}
+for data in name:
+    name_dict_12[data] = 0   
+    
+name_dict_13 = {}
+for data in name:
+    name_dict_13[data] = 0   
+    
+name_dict_14 = {}
+for data in name:
+    name_dict_14[data] = 0    
+    
+name_dict_15 = {}
+for data in name:
+    name_dict_15[data] = 0
+    
+name_dict_16 = {}
+for data in name:
+    name_dict_16[data] = 0
+    
+name_dict_17 = {}
+for data in name:
+    name_dict_17[data] = 0
+    
+name_dict_18 = {}
+for data in name:
+    name_dict_18[data] = 0  
+</code></pre>
+<ul>
+<li>2011 ~ 2018년도까지 딕셔너리를 만들어서 해당 투수의 승리와 패배를 리스트로 저장한다.</li>
+
+</ul>
+<h3>연도와 딕셔너리 이름 리스트 만들기</h3>
+<pre><code class='language-python' lang='python'>dic_list = [name_dict_11, name_dict_12,name_dict_13,name_dict_14,name_dict_15,name_dict_16,name_dict_17,name_dict_18]
+year_list = [i for i in range(2011,2019) ]
+</code></pre>
+<ul>
+<li>for문 돌릴 때 필요한 리스트를 만들었다.</li>
+
+</ul>
+<h3>최종 함수 만들기와 저장</h3>
+<pre><code class='language-python' lang='python'>def save(dic_list, year_list):
+    for dic,year in zip(dic_list, year_list):
+        print(dic)
+        dic = player_win(year,dic)
+        
+save(dic_list, year_list)        
+</code></pre>
+<ul>
+<li>최종으로 함수를 만들었고 실행하였다.</li>
+
+</ul>
+<h3>크롤링 저장 결과</h3>
+<pre><code class='language-python' lang='python'>name_dict_18
+&gt;
+{&#39;후랭코프&#39;: [18, 3],
+ &#39;험버&#39;: 0,
+ &#39;마야&#39;: 0,
+ &#39;레일리&#39;: [11, 13],
+ &#39;팻딘&#39;: [6, 7],
+ &#39;휠러&#39;: [3, 9],
+ &#39;브리검&#39;: [11, 7],
+ &#39;어센시오&#39;: 0,
+ &#39;이브랜드&#39;: 0,
+ &#39;아델만&#39;: [8, 12],
+ &#39;토마스&#39;: 0,
+ &#39;세든&#39;: 0,
+ &#39;린드블럼&#39;: [15, 4],
+ &#39;서캠프&#39;: 0,
+ &#39;윌슨&#39;: [9, 4],
+ &#39;비야누에바&#39;: 0,
+ &#39;에반&#39;: 0,
+ &#39;로저스&#39;: [5, 4],
+ &#39;루카스&#39;: 0,
+ &#39;마리몬&#39;: 0,
+ &#39;헤일&#39;: [3, 4],
+ &#39;해커&#39;: [5, 3],
+ &#39;레나도&#39;: 0,
+ &#39;레온&#39;: 0,
+ &#39;웨버&#39;: 0,
+ &#39;허프&#39;: 0,
+ &#39;웹스터&#39;: 0,
+ &#39;클로이드&#39;: 0,
+ &#39;보우덴&#39;: 0,
+ &#39;스와잭&#39;: 0,
+ &#39;코프랜드&#39;: 0,
+ &#39;피어밴드&#39;: [8, 8],
+ &#39;샘슨&#39;: [13, 8],
+ &#39;피가로&#39;: 0,
+ &#39;앨버스&#39;: 0,
+ &#39;베렛&#39;: [6, 10],
+ &#39;레이예스&#39;: 0,
+ &#39;리즈&#39;: 0,
+ &#39;스틴슨&#39;: 0,
+ &#39;볼스테드&#39;: 0,
+ &#39;플란데&#39;: 0,
+ &#39;올슨&#39;: 0,
+ &#39;맨쉽&#39;: 0,
+ &#39;밴덴헐크&#39;: 0,
+ &#39;보니야&#39;: [7, 10],
+ &#39;지크&#39;: 0,
+ &#39;아담&#39;: 0,
+ &#39;탈보트&#39;: 0,
+ &#39;오간도&#39;: 0,
+ &#39;카스티요&#39;: 0,
+ &#39;피노&#39;: 0,
+ &#39;헥터&#39;: [11, 10],
+ &#39;산체스&#39;: [8, 8],
+ &#39;코엘로&#39;: 0,
+ &#39;소사&#39;: [9, 9],
+ &#39;니퍼트&#39;: [8, 8],
+ &#39;티포드&#39;: 0,
+ &#39;오설리반&#39;: 0,
+ &#39;어윈&#39;: 0,
+ &#39;다이아몬드&#39;: 0,
+ &#39;울프&#39;: 0,
+ &#39;듀브론트&#39;: [6, 9]}
+</code></pre>
+<ul>
+<li>그럼 이렇게 해당 투수에 대한 정보가 저장된다. 이제 df와 합쳐서 분석하면 된다.</li>
+
+</ul>
+</body>
+</html>
