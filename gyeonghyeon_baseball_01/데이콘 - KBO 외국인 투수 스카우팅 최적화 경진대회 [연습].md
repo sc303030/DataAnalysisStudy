@@ -274,3 +274,24 @@ name_dict_18
 ```
 
 - 그럼 이렇게 해당 투수에 대한 정보가 저장된다. 이제 df와 합쳐서 분석하면 된다.
+
+### 딕셔너리랑 df 합치기
+
+```python
+import numpy as np
+
+for dic,year in zip(dic_list, year_list):
+    for i in range(외국인역대성적.shape[0]):
+        if 외국인역대성적.loc[i,'year'] == year:
+            print(year)
+            for key,value in dic.items():
+                if 외국인역대성적.loc[i,'pitcher_name'] == key:
+                    print(key, value)
+                    print( np.array(list(value), dtype=object))
+                    외국인역대성적.at[i,'2011년_승_패'] = np.array(list(value), dtype=object)
+```
+
+- 연도와 dict랑 비교해서 같은 년도에 같은 투수 이름이 있으면 해당 투수 컬럼에 저장하는 식으로 하였다. 
+- 그러나 마지막 행에서 `setting an array element with a sequence.` 와 같은 오류가 발생하여 해결하려고 한다.
+
+![07](./img/07.jpg)
