@@ -295,3 +295,31 @@ for dic,year in zip(dic_list, year_list):
 - 그러나 마지막 행에서 `setting an array element with a sequence.` 와 같은 오류가 발생하여 해결하려고 한다.
 
 ![07](./img/07.jpg)
+
+#### df와 딕셔너리 합치기
+
+```python
+
+for dic,year in zip(dic_list, year_list):
+    for i in range(외국인역대성적.shape[0]):
+        if 외국인역대성적.loc[i,'year'] == year:
+            print(year)
+            for key,value in dic.items():
+                if 외국인역대성적.loc[i,'pitcher_name'] == key:
+                    if value != 0:
+                        print(key, value)
+                        print(value)
+                        print(' '.join(value))
+                        외국인역대성적.loc[i,'2011년_승_패'] = str(' '.join(value))
+                    else:
+                        외국인역대성적.loc[i,'2011년_승_패'] = 0
+```
+
+- value의 값이 0이 아니면 승과 패를 한 칸 띄어서 저장하였다.
+
+![08](./img/08.jpg)
+
+![09](./img/09.jpg)
+
+- 이렇게 새로운 컬럼이 추가되었다. 
+  - 그러나 빨간박스를 보면 출전기록은 있는데 승_패 값이 0인 경우가 있다. 기록실을 살펴보니 해당 선수의 기록이 없었다. 왜그런지 더 살펴보기로 하였다.
