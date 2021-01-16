@@ -364,3 +364,84 @@ dict_items([('피어밴드', 0), ('맨쉽', 0), ('레일리', 0), ('마야', 0),
 ![13](./img/13.png)
 
 - 그리고 뒤로가기 버튼이 더 있었다. 상상도 못했다. 크롤링을 조금 더 수정해서 데이터를 다시 수집하자.
+
+### 크롤링 수정하고 다시 정보 가져오기
+
+```python
+def page_search(start,end,dic):
+    for page_num in range(start,end):
+        print(page_num)
+        page3 = driver.find_elements_by_css_selector('.paging')
+        page3[0].find_elements_by_tag_name('a')[page_num].click()
+        time.sleep(1.5)
+        page2 = driver.find_elements_by_css_selector('.tData01')
+        a = page2[0].find_element_by_tag_name('tbody').find_elements_by_tag_name('tr')
+        for idx,value in enumerate(a):
+            name = value.find_elements_by_tag_name('td')[1].text
+            for key in list(dic.keys()):
+                if key == name:
+                    print(name)
+                    dic[key] = [str(value.find_elements_by_tag_name('td')[5].text), 
+                                str(value.find_elements_by_tag_name('td')[6].text)]   
+```
+
+- 1~5페이지와 6~나머지 페이지를 크롤링해야해서 페이지에서 승패를 가져오는 부분을 함수로 따로 만들었다.
+
+```python
+def player_win(year,dic):
+    driver.get('https://www.koreabaseball.com/Record/Player/PitcherBasic/Basic1.aspx')
+    page1 = driver.find_elements_by_tag_name('option')
+    for i in page1:
+            if i.text == str(year):
+                print(year)
+                i.click()
+                time.sleep(1.5)
+                page = driver.find_elements_by_css_selector('.tData01')
+                k = page[0].find_element_by_tag_name('thead').find_element_by_tag_name('tr').find_elements_by_tag_name('th')
+                k[5].click()
+                time.sleep(1.5)
+                page3 = driver.find_elements_by_css_selector('.paging')
+                # 크롤링 하기
+                page_search(1,6,dic)
+                page3 = driver.find_elements_by_css_selector('.paging')
+                page3[0].find_elements_by_tag_name('a')[-1].click()
+                time.sleep(1.5)
+                page3 = driver.find_elements_by_css_selector('.paging')
+                page_num = len(page3[0].find_elements_by_tag_name('a')[2:-1])
+                print(page_num)
+                page_search(2,page_num+2,dic)
+                break
+    return    dic   
+```
+
+- `#크롤링하기` 부터 수정하였다. 우선 1~5페이지를 가져오고 5페이지가 끝나면 뒤로가기 버튼을 클릭한다.
+- 그 다음에 페이지의 개수를 나타내는 a태그를 찾아 해당 태그의 개수를 구한다.
+  - 2부터 진행한 이유는 6페이지가 2번째 인덱스부터 있어서 그렇다.
+- 2부터 해당 길이 +2 까지 다시 돌리면 맨 뒤페이지까지 가능하다.
+
+#### 승패가 0인 선수 찾기
+
+```python
+외국인역대성적[외국인역대성적['2011년_승_패'] == 0]
+```
+
+![14](./img/14.jpg)
+
+- 뒷페이지까지 돌리니 해커 한명만 0이다. 해커의 이름의 조건을 줘서 다시 크롤링하자.
+
+- 조건주다가 에러나서 그냥 수기로 바꿨다.
+
+```python
+name_dict_13['해커'] = ['4','11']
+name_dict_14['해커'] = ['8','8']
+```
+
+- 2개여서 그냥 찾아서 바꿨다.
+
+```python
+외국인역대성적[외국인역대성적['2011년_승_패'] == 0]
+```
+
+![15](./img/15.jpg)
+
+- 드디어 0인값이 없다.
