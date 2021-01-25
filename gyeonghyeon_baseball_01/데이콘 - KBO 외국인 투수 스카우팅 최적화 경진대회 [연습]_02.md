@@ -75,3 +75,54 @@ headtail10(외국인역대성적,['경기수'])
 - 여기서 그냥 찾아서 엑셀에 기록하였다.
 
 ![21](./img/21.png)
+
+### 방출선수들 세부기록 보기
+
+```python
+throw_df = pd.read_csv('plus_win_lose_2.csv')
+throw_df.head()
+```
+
+- 위에서 입력한 파일을 열었다.
+
+```python
+throw_df_01 =  throw_df[throw_df['방출연도'].isnull() == False].reset_index(drop=True)
+throw_df_01['방출연도'] = throw_df_01['방출연도'].astype(int)
+```
+
+- 방출연도라는 새로운 컬럼을 위에서 만들었고 그 값이 null이 아닌 것들만 추려서 인덱스와 타입을 바꾸었다.
+
+```python
+throw_df_01.describe()
+```
+
+![22](./img/22.jpg)
+
+- 패한 경기수가 더 많다.
+
+- era보 6.x대라 낮다고 볼 수 없다. 그러면 게임수로 나눠보자.
+
+```python
+throw_df_01[throw_df_01['경기수'] >= 10].describe()
+```
+
+![23](./img/23.jpg)
+
+- 10경기 이상 뛴 선수로 나눈 것은 어느정도 괜찮은 성적을 내고있다고 생각해서 그만큼 경기를 뛰었다고 생각했기때문이다.
+- 기대만큼 다들 못해줘서 방출이라는 결과가 나온것 같다. 세부기록들은 다른 방출 안 된 선수들과 비교해보자.
+
+```python
+throw_df_01[throw_df_01['경기수'] < 10].describe()
+```
+
+![24](./img/24.jpg)
+
+- 승률도 낮고 평균자책점도 높다. 
+
+```python
+throw_df[throw_df['pitcher_name'] == '마야']
+```
+
+![24](./img/25.jpg)
+
+- 이렇게 2년간 뛰다가 방출된 선수들도 있어서 비고해보기로 하였다. 확실히 2015년에 기록이 안좋아졌다.
