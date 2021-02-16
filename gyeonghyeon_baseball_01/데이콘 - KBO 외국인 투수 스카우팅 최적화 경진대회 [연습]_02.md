@@ -227,7 +227,7 @@ throw_df[throw_df['pitcher_name'] == '니퍼트']
 
 ![32](./img/32.PNG)
 
-- 얼추 들어온 선수들의 이름이 있다. 
+- 얼추 들어본 선수들의 이름이 있다. 
 
 - 이쯤에서 궁금해졌다. 과연 감독들은 어떤 투수를 원할까?
 
@@ -251,3 +251,25 @@ throw_df[throw_df['pitcher_name'] == '니퍼트']
     - 커맨드란 좋은 스트라이크(good strike) 또는 경우에 따라 존 바깥의 원하는 곳으로 원하는 구질의 공을 던지는 능력
 
       출처: https://baseball-in-play.com/52 [Baseball-in-Play]
+
+- 그럼 구종이 다양하면서 단타 비율이 높고 키가 크면서 결정구를 가지고 커맨드가 좋은 선수를 뽑으면 되겠다.
+  - 그동안에 방출안된 선수들의 기록을 살펴보자.
+  - BABIP이 낮고, WAR이 높고, SwStr과 Swing이 높고 GB,FB,IFFB도 높은 순으로 찾아봐야겠다. 거기에 구종의 개수를 추가하자.
+    - 물론 세이브와 안타, 홈런, ERA도 고려해야 한다.
+  - kbo타자들이 어떤 공에 취약한지 찾아보고 그 공을 자주 던지는 선수를 찾아보자.
+
+```python
+외국인스탯캐스터.groupby(['pitcher_name','pitch_name']).agg({'pitch_name':'count'})
+```
+
+![33](./img/33.jpg)
+
+- 이렇게 그동안의 구종을 종합해보았다. 
+
+```python
+외국인스탯캐스터.groupby(['pitcher_name','pitch_name']).agg({'pitch_name':'count'}).T['휠러']
+```
+
+![34](./img/34.jpg)
+
+- 2018년에 방출된 휠러선수의 기록이다. 확실히 다른 선수들보다 pitch가 적다. 이렇게 선수들의 기록을 딕셔너리 형식으로 담아서 컬럼에 저장하려고 한다.
