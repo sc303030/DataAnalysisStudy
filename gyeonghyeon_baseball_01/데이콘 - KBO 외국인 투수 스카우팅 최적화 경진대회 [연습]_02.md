@@ -273,3 +273,72 @@ throw_df[throw_df['pitcher_name'] == '니퍼트']
 ![34](./img/34.jpg)
 
 - 2018년에 방출된 휠러선수의 기록이다. 확실히 다른 선수들보다 pitch가 적다. 이렇게 선수들의 기록을 딕셔너리 형식으로 담아서 컬럼에 저장하려고 한다.
+
+#### df로 저장하기
+
+- 일반선수와 방출되지 않은 선수들의 정보를 df로 만들었다.
+
+```python
+mlb_data = pd.DataFrame({'pitcher_name':[], '2-Seam Fastball':[],'4-Seam Fastball':[],'Changeup':[],'Curveball':[],
+                        'Cutter':[],'Intentional Ball':[],'Pitch Out':[],'Slider':[]})
+for name in playername:
+    a = 외국인스탯캐스터.groupby(['pitcher_name','pitch_name']).agg({'pitch_name':'count'})\
+.T[name].reset_index(drop=True)
+    a['pitcher_name'],a['cnt'] = name, a.shape[1]
+    mlb_data = mlb_data.append(a,ignore_index=True)
+mlb_data 
+```
+
+- 빈 df를 만들어서 계속 붙여나갔다.
+
+![35](./img/35.jpg)
+
+- 방출되지 않은 선수 df
+
+```python
+not_out = list(filter(lambda x:x not in playername,list(throw_df.drop_duplicates(['pitcher_name'])['pitcher_name'])))
+
+mlb_data_2 = pd.DataFrame({'pitcher_name':[], '2-Seam Fastball':[],'4-Seam Fastball':[],'Changeup':[],'Curveball':[],
+                        'Cutter':[],'Intentional Ball':[],'Pitch Out':[],'Slider':[]})
+for name in not_out:
+    a = 외국인스탯캐스터.groupby(['pitcher_name','pitch_name']).agg({'pitch_name':'count'})\
+.T[name].reset_index(drop=True)
+    a['pitcher_name'],a['cnt'] = name, a.shape[1]
+    mlb_data_2 = mlb_data.append(a,ignore_index=True)
+mlb_data_2    
+```
+
+- 그러나 다음과 같은 에러가 발생하였다.
+
+![36](./img/36.jpg)
+
+- 외국인스탯캐스터에 정보가 없는 선수들이 있었다.
+- 그래서 try와 except를 하였다.
+
+```python
+not_out = list(filter(lambda x:x not in playername,list(throw_df.drop_duplicates(['pitcher_name'])['pitcher_name'])))
+
+mlb_data_2 = pd.DataFrame({'pitcher_name':[], '2-Seam Fastball':[],'4-Seam Fastball':[],'Changeup':[],'Curveball':[],
+                        'Cutter':[],'Intentional Ball':[],'Pitch Out':[],'Slider':[]})
+for name in not_out:
+    try:
+        a = 외국인스탯캐스터.groupby(['pitcher_name','pitch_name']).agg({'pitch_name':'count'})\
+    .T[name].reset_index(drop=True)
+        a['pitcher_name'],a['cnt'] = name, a.shape[1]
+        mlb_data_2 = mlb_data_2.append(a,ignore_index=True)
+    except:
+        print(name)
+mlb_data_2  
+```
+
+- 리즈와 카스티요선수만 없었다.
+
+![37](./img/37.jpg)
+
+- 7~8개를 가진 선수들이  많다.
+
+- 이 정보와 함께 x,y축을 이용한 캐글 코드를 사용하려고 한다. [출처](https://www.kaggle.com/jzdsml/sp-finding-baseball-strike-zone-w-svm)
+
+![38](./img/38.jpg)
+
+- 이렇게 스트라이크 존을 예측해준다. 따라해보자.
