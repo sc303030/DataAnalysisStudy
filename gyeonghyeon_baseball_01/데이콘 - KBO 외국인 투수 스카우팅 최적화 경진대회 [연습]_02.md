@@ -342,3 +342,51 @@ mlb_data_2
 ![38](./img/38.jpg)
 
 - 이렇게 스트라이크 존을 예측해준다. 따라해보자.
+
+```python
+def plot_SVM(aaron_judge,gamma=1, C=1):
+#     aaron_judge = pd.read_csv('../input/aaron_judge.csv')
+    #print(aaron_judge.columns)
+    #print(aaron_judge.description.unique())
+    #print(aaron_judge.type.unique())
+    aaron_judge.type = aaron_judge.type.map({'S':1, 'B':0})
+    #print(aaron_judge.type)
+    #print(aaron_judge['plate_x'])
+    aaron_judge = aaron_judge.dropna(subset = ['type', 'plate_x', 'plate_z'])
+    fig, ax = plt.subplots()
+    plt.scatter(aaron_judge.plate_x, aaron_judge.plate_z, c = aaron_judge.type, cmap = plt.cm.coolwarm, alpha=0.6)
+    training_set, validation_set = train_test_split(aaron_judge, random_state=1)
+    classifier = SVC(kernel='rbf', gamma = gamma, C = C)
+    classifier.fit(training_set[['plate_x', 'plate_z']], training_set['type'])
+    draw_boundary(ax, classifier)
+    plt.show()
+    print("The score of SVM with gamma={0} and C={1} is:".format(gamma, C) )
+    print(classifier.score(validation_set[['plate_x', 'plate_z']], validation_set['type']))
+```
+
+- ` aaron_judge.type = aaron_judge.type.map({'S':1, 'B':0})` 여기를 보면 스트라이크와 볼이 다른 값을 가져야 한다. 그래서 밑에 사진과 같이 같은 타자에게 누적된 값을 분리해줘야 하는 작업이 필요하다.
+
+![39](./img/39.png)
+
+### ball, strike를 입력하기
+
+```python
+외국인스탯캐스터_ball = 외국인스탯캐스터.sort_values(by=['game_date','pitcher','batter','balls']).reset_index(drop=True)
+외국인스탯캐스터_strikes = 외국인스탯캐스터.sort_values(by=['game_date','pitcher','batter','strikes']).reset_index(drop=True)
+외국인스탯캐스터.head()
+```
+
+- 볼로 정렬한것과 스트라이크로 정렬한거 2개 df를 만들기
+
+```python
+for i in range(1,외국인스탯캐스터_ball.shape[0]):
+    if 외국인스탯캐스터_ball.loc[i-1,'batter'] == 외국인스탯캐스터_ball.loc[i,'batter'] and\
+ 외국인스탯캐스터_ball.loc[i-1,'pitcher'] == 외국인스탯캐스터_ball.loc[i,'pitcher']:
+        
+        ball_cnt = 외국인스탯캐스터.loc[i,'balls']  - 외국인스탯캐스터.loc[i-1,'balls']
+        print(f'ball_cnt, : {ball_cnt}')
+```
+
+![40](./img/40.jpg)
+
+- 이렇게 볼과 스트라이크를 새로운 컬럼으로 만들어보자.
