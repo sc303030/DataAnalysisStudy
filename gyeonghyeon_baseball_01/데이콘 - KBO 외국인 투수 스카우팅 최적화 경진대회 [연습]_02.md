@@ -390,3 +390,21 @@ for i in range(1,외국인스탯캐스터_ball.shape[0]):
 ![40](./img/40.jpg)
 
 - 이렇게 볼과 스트라이크를 새로운 컬럼으로 만들어보자.
+
+- 다시보니 원래 데이터가 정렬이 되어있어서 그걸 기준으로 잡고 다시 만들었다.
+
+```python
+for i in range(외국인스탯캐스터.shape[0]-1):
+    if 외국인스탯캐스터.loc[i,'batter'] == 외국인스탯캐스터.loc[i+1,'batter'] and\
+ 외국인스탯캐스터.loc[i,'pitcher'] == 외국인스탯캐스터.loc[i+1,'pitcher']:
+        
+        ball_cnt = 외국인스탯캐스터.loc[i,'balls']  - 외국인스탯캐스터.loc[i+1,'balls']
+        strike_cnt = 외국인스탯캐스터.loc[i,'strikes']  - 외국인스탯캐스터.loc[i+1,'strikes']
+        print(f'ball_cnt : {ball_cnt}, strike_cnt : {strike_cnt}')
+        if ball_cnt == 1: 외국인스탯캐스터.loc[i,'type'] = 0
+        if strike_cnt == 1:외국인스탯캐스터.loc[i,'type'] = 1
+```
+
+![41](./img/41.png)
+
+- type의 숫자를 한칸씩 뒤로 밀어야 한다. 이렇게 하니깐 맨 마지막 공을 판단 하기 어려워서 description에 나와있는 설명으로 판단하는게 나을것 같다.
