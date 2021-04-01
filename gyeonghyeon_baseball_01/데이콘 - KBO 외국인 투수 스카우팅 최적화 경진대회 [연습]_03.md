@@ -95,13 +95,24 @@ SVC(kernel='rbf', gamma = gamma, C = C)
 - 감마가 클수록 작은 표준편차를 가진다.
   - 데이터 포인터가 영향력을 행사하는 거리가 짧아진다.
 
-
-### 선수별로 SVM은 나중에 구해보고 리포트에 나와있는 경기의 승패를 찾아서 학습하기
-
-- 스탯캐스터에서는 구종이랑 평균 구속, 좌타와 우타에 대한 스트라이크, 볼의 개수만 가져와서 한국 스탯이랑 합쳐야겠다.
+### 선수별로 SVM은 나중에 구해보고 원래대로 한국에서 경기수와 승률 상위 20%와 하위 20%의 스탯을 뽑아 승패를 학습하기
 
 ```python
-외국인스탯캐스터.to_csv('최종외국인스탯캐스터.csv', encoding='euc-kr',index = False)
+throw_df = pd.read_csv('률lus_win_lose_2.csv')
+top20 = throw_df.sort_values(['승률','경기수'], ascending=False).reset_index(drop=True)[:20]
+bottom20 = throw_df.sort_values(['승률','경기수'], ascending=False).reset_index(drop=True)[-20:]
+display(top20)
+display(bottom20)
 ```
 
-- 위에서 만들었던 파일을 저장하여 이 파일로 이제 활용하자.
+- 단순히 승률로만 본다면 1경기 뛰고 이기면 100%여서 경기수도 같이 보았다.
+
+![45](./img/45.jpg)
+
+- 상위 20명이여서 그런지 방출도 없다.
+
+- 익숙한 이름들이 많다.
+
+![46](./img/46.jpg)
+
+- 방출된 사람들도 보이고 방어율이 안좋다.
