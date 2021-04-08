@@ -116,3 +116,33 @@ display(bottom20)
 ![46](./img/46.jpg)
 
 - 방출된 사람들도 보이고 방어율이 안좋다.
+
+### 머신러닝
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+```
+
+- 사이킷런을 불러서 머신런닝하기
+
+```python
+feature = throw_df.drop('승',axis=1)
+label = throw_df['승']
+
+X_train, X_test, y_train, y_test = train_test_split(feature,label, test_size = 0.2, random_state=20)
+```
+
+- 승을 기준으로 피처와 라벨을 나워서 학습과 테스트 테이터를 나눈다.
+
+```python
+base_dtc = DecisionTreeClassifier(random_state=20, criterion='entropy')
+base_dtc.fit(X_train, y_train)
+predition = base_dtc.predict(X_test)
+```
+
+- 우선은 의사결정나무로 학습해보기로 하였다. 
+
+![47](./img/47.jpg)
+
+- 라벨링을 안해서 오류가 발생하였다. 선수이름과 팀, 승을 라벨링해서 다시 나누자.
