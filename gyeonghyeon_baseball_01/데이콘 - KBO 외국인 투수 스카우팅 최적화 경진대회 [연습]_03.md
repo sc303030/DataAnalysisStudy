@@ -146,3 +146,31 @@ predition = base_dtc.predict(X_test)
 ![47](./img/47.jpg)
 
 - 라벨링을 안해서 오류가 발생하였다. 선수이름과 팀, 승을 라벨링해서 다시 나누자.
+
+#### NaN 값 0으로 대체
+
+```python
+throw_df['year_born'] = throw_df['year_born'].fillna(0)
+throw_df['방출연도'] = throw_df['방출연도'].fillna(0)
+```
+
+```python
+throw_df.info()
+```
+
+```python
+from sklearn.preprocessing import LabelEncoder
+
+def label(df):
+    col = list(df)
+    encoder = LabelEncoder()
+    encoder.fit(col)
+    col_label = encoder.transform(col)
+    return col_label
+
+pitcher_name_label = label(throw_df['pitcher_name'])
+team_label = label(throw_df['team'])
+year_born_label = label(throw_df['year_born'])
+```
+
+- info에서 object인 컬럼들만 라벨인코딩을 실시하였다.
