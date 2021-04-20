@@ -174,3 +174,22 @@ year_born_label = label(throw_df['year_born'])
 ```
 
 - info에서 object인 컬럼들만 라벨인코딩을 실시하였다.
+
+```python
+throw_df = throw_df.assign(pitcher_name_label=pitcher_name_label,
+                          team_label=team_label,
+                          year_born_label=year_born_label)
+throw_df_digit = throw_df.drop(['pitcher_name','team','year_born','year'],axis=1)
+throw_df_digit.head()
+```
+
+- df에 컬럼으로 추가하고 기존에 있던 object컬럼을 제거하였다.
+
+```python
+from sklearn.metrics import accuracy_score
+print(f'예측 정확도 : {accuracy_score(y_test, predition)}')
+>
+예측 정확도 : 0.19047619047619047
+```
+
+- 다시 예측을 실시하였는데 거의 예측을 안하니만큼 정확도가 나왔다. 정규화나 표준화를 해야겠다.
