@@ -299,3 +299,38 @@ for val in 외국인메이저성적[외국인메이저성적['평균구속'].isn
 
 - 선수들의 평균을 내려고 연도를 제거하고 묶었다.
   - 소수점 이하 자리는 다시 조정해서 df로 만들자
+
+```python
+외국인메이저_평균 = 외국인메이저성적_drop_year.groupby('pitcher_name').agg('mean').head().reset_index(drop=False).round(decimals=2)
+```
+
+- 모두 소수점 2자리까지로 변환
+
+```python
+### 구종 개수 추가
+playername = list(throw_df['pitcher_name'].drop_duplicates())
+
+구종데이터 = pd.DataFrame({'pitcher_name':[], '2-Seam Fastball':[],'4-Seam Fastball':[],'Changeup':[],'Curveball':[],
+                        'Cutter':[],'Intentional Ball':[],'Pitch Out':[],'Slider':[]})
+for name in playername:
+    try:
+        a = 외국인스탯캐스터.groupby(['pitcher_name','pitch_name']).agg({'pitch_name':'count'})\
+    .T[name].reset_index(drop=True)
+        a['pitcher_name'],a['cnt'] = name, a.shape[1]
+        구종데이터 = 구종데이터.append(a,ignore_index=True)
+    except:
+        print(name)
+display(구종데이터.head())
+print(구종데이터.cnt.mean())
+```
+
+|      | 2-Seam Fastball | 4-Seam Fastball | Changeup | Curveball | Cutter | Eephus | Fastball | Forkball | Intentional Ball | Pitch Out | Sinker | Slider | Split Finger | Unknown |  cnt | pitcher_name |
+| ---: | --------------: | --------------: | -------: | --------: | -----: | -----: | -------: | -------: | ---------------: | --------: | -----: | -----: | -----------: | ------: | ---: | -----------: |
+|    0 |            26.0 |           384.0 |     81.0 |      82.0 |    6.0 |    NaN |      NaN |      NaN |              4.0 |       1.0 |    NaN |    4.0 |          NaN |     NaN |  8.0 |       니퍼트 |
+|    1 |            19.0 |           245.0 |      8.0 |       NaN |   20.0 |    NaN |      NaN |      NaN |              4.0 |       2.0 |  269.0 |  306.0 |          NaN |     NaN |  8.0 |         소사 |
+|    2 |            58.0 |           433.0 |    429.0 |       NaN |  171.0 |    NaN |      NaN |      NaN |              9.0 |       5.0 | 1360.0 |  284.0 |          NaN |     NaN |  8.0 |       탈보트 |
+|    3 |           773.0 |           950.0 |    297.0 |      88.0 |    NaN |    NaN |      NaN |      NaN |              NaN |       3.0 |    NaN |  256.0 |          NaN |     NaN |  6.0 |     레이예스 |
+|    4 |           207.0 |           324.0 |    182.0 |      25.0 |    NaN |    NaN |      NaN |      NaN |              1.0 |       NaN |    NaN |  153.0 |          NaN |     NaN |  6.0 |         세든 |
+
+- 구종을 구한 후 개수로 변환
+  - int로 변환하기
