@@ -200,3 +200,23 @@ throw_df_copy = throw_df_copy[['pitcher_name','year','승','패']]
 ```
 
 - 이렇게 하나씩 null값을 확인하고 변경해준다.
+
+```python
+외국인_승패_추가_승패제거[외국인_승패_추가_승패제거['ERA'].isnull()]
+```
+
+| pitcher_name |     year |  ERA |   WAR |  TBF |     H |   HR |   BB |  HBP |   SO |  ... | BABIP |  FIP |  LD% |  GB% |  FB% | IFFB% | SwStr% | Swing% | 평균구속 |  cnt |      |
+| -----------: | -------: | ---: | ----: | ---: | ----: | ---: | ---: | ---: | ---: | ---: | ----: | ---: | ---: | ---: | ---: | ----: | -----: | -----: | -------: | ---: | ---- |
+|            0 |     리즈 | 2011 |  4.24 | -0.2 | 106.0 | 26.0 |  4.0 | 12.0 |  3.0 | 27.0 |   ... | 0.37 | 4.98 | 0.35 | 0.35 |  0.69 |   0.16 |    0.1 |     0.46 |  NaN | NaN  |
+|            3 |     리즈 | 2012 |  4.24 | -0.2 | 106.0 | 26.0 |  4.0 | 12.0 |  3.0 | 27.0 |   ... | 0.37 | 4.98 | 0.35 | 0.35 |  0.69 |   0.16 |    0.1 |     0.46 |  NaN | NaN  |
+|            6 |     리즈 | 2013 |  4.24 | -0.2 | 106.0 | 26.0 |  4.0 | 12.0 |  3.0 | 27.0 |   ... | 0.37 | 4.98 | 0.35 | 0.35 |  0.69 |   0.16 |    0.1 |     0.46 |  NaN | NaN  |
+|           12 | 밴덴헐크 | 2013 |   NaN |  NaN |   NaN |  NaN |  NaN |  NaN |  NaN |  NaN |   ... |  NaN |  NaN |  NaN |  NaN |   NaN |    NaN |    NaN |      NaN |  NaN | NaN  |
+|           18 | 밴덴헐크 | 2014 |   NaN |  NaN |   NaN |  NaN |  NaN |  NaN |  NaN |  NaN |   ... |  NaN |  NaN |  NaN |  NaN |   NaN |    NaN |    NaN |      NaN |  NaN | NaN  |
+|           56 | 카스티요 | 2016 | 13.50 |  0.0 |   8.0 |  3.0 |  0.0 |  1.0 |  0.0 |  2.0 |   ... | 0.60 | 2.41 | 0.60 | 0.40 |  0.50 |   0.00 |    0.2 |     0.47 |  NaN | NaN  |
+|           58 |   마리몬 | 2016 |   NaN |  NaN |   NaN |  NaN |  NaN |  NaN |  NaN |  NaN |   ... |  NaN |  NaN |  NaN |  NaN |   NaN |    NaN |    NaN |      NaN |  NaN | NaN  |
+|           76 |   브리검 | 2017 |   NaN |  NaN |   NaN |  NaN |  NaN |  NaN |  NaN |  NaN |   ... |  NaN |  NaN |  NaN |  NaN |   NaN |    NaN |    NaN |      NaN |  NaN | NaN  |
+|           91 |   브리검 | 2018 |   NaN |  NaN |   NaN |  NaN |  NaN |  NaN |  NaN |  NaN |   ... |  NaN |  NaN |  NaN |  NaN |   NaN |    NaN |    NaN |      NaN |  NaN | NaN  |
+
+- 모두 nan값인 행들은 날려버리고 평균 구속과 cnt만 nan인 것은 평균값으로 대체하자.
+- 그 다음 이름을 모두 인코딩하여 머신러닝을 해보자.
+
